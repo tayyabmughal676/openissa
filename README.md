@@ -352,7 +352,14 @@ block_private_networks = true # SSRF protection
 - [x] **v0.3**: Remote HTTP Server-Sent Events (SSE) transport (`openissa serve`) + Autonomous Discovery Engine (`/llms.txt`, recursive sitemaps, spider, path filtering).
 - [x] **v0.4**: Formal Evidence Graph DAG with authority-weighted claim confidence synthesis (`web_research`).
 - [x] **21/21 Automated Tests Passing** (Unit tests across all 8 crates + E2E integration research DAG test suite).
-- [ ] **v1.0**: Embedded hybrid vector search (LanceDB) and distributed team cache deduplication.
+- [ ] **v0.5: Native Advanced RAG Engine (Docs & Multi-Source Synthesis)**:
+  - **AST-Aware Semantic Chunking**: Header-aware splitter (`#`, `##`, `###`), unbroken code fences, table preservation, and hierarchical breadcrumb prefixing (`[Doc > Section > Subsection]`).
+  - **Multi-Source Ingestion**: Ingestion of web docs, `/llms.txt`, local filesystem directories (`.md`, `.rs`, `.py`), and PDF technical papers into SQLite.
+  - **Hybrid Dense + Sparse Retrieval (RRF)**: Merging SQLite FTS5 BM25 lexical ranking with vector embeddings via Reciprocal Rank Fusion (`RRF_Score = w1/(60 + rank_bm25) + w2/(60 + rank_vec)`).
+  - **Embedding Substrate**: Local offline ONNX/candle support (`bge-small-en-v1.5`) + Ollama and OpenAI provider fallback.
+  - **Parent-Child Retrieval & Context Expansion**: High-precision child chunk matching with full parent section expansion for agent context.
+  - **MCP Tools**: `rag_index`, `rag_query`, and `rag_inspect` directly feeding verified claims into the Evidence Graph.
+- [ ] **v1.0**: Distributed team cache deduplication and enterprise multi-node synchronization.
 
 ## License
 

@@ -515,9 +515,29 @@ openissa/
 *   `openissa serve [port] [host]`: Multi-client HTTP/1.1 Server-Sent Events (SSE) daemon with `/sse`, `/message`, and `/health`.
 *   21/21 passing automated unit and integration tests (`crates/openissa-cli/tests/e2e_research.rs`).
 
+### v0.5: Native Advanced RAG Engine (Docs & Multi-Source Synthesis) — [UPCOMING ROADMAP]
+*   **AST-Aware Semantic Chunking**: Header-level hierarchy (`#`, `##`, `###`), unbroken code fences, table preservation, and breadcrumb prefixing (`[Doc > Section > Subsection]`).
+*   **Multi-Source Ingestion Pipeline**:
+    *   Web documentation crawls, `/llms.txt`, and full sitemaps.
+    *   Local filesystem directories, Markdown docs, codebases (`.rs`, `.py`, `.ts`), and PDF technical papers.
+*   **Hybrid Retrieval Engine (RRF)**:
+    *   Sparse lexical search using existing SQLite FTS5 BM25 `doc_index`.
+    *   Dense semantic search via vector embeddings with cosine similarity.
+    *   Reciprocal Rank Fusion (RRF) algorithm: `RRF_Score(d) = w_bm25 / (60 + rank_bm25(d)) + w_vec / (60 + rank_vec(d))`.
+*   **Flexible Embedding Substrate**:
+    *   Local-first offline execution via embedded ONNX runtime (`bge-small-en-v1.5` or `all-MiniLM-L6-v2`).
+    *   Configurable remote provider fallback (Ollama, OpenAI `text-embedding-3-small`).
+    *   Zero-cloud fallback: Gracefully operates purely on SQLite FTS5 BM25 if embeddings are unconfigured.
+*   **Parent-Child Retrieval & Context Expansion**: High-precision matching on compact child chunks (200–400 tokens) with dynamic retrieval of surrounding parent context (1,000–2,000 tokens).
+*   **Agent MCP Tools**:
+    *   `rag_index`: Ingest directories, code repositories, or URLs into SQLite RAG storage.
+    *   `rag_query`: Hybrid search with semantic filters, RRF ranking, and citation tracking.
+    *   `rag_inspect`: Expand full parent sections or inspected source files.
+    *   Direct grounding into `openissa-core` Evidence Graph claims as `SourceTier::LocalIndex` or `SourceTier::PrimaryDoc`.
+
 ### v1.0: Enterprise & Multi-Node (Future)
-*   Hybrid BM25 + embedded vector retrieval (e.g. LanceDB).
-*   Multi-node distributed team cache deduplication.
+*   Distributed team cache deduplication across agent clusters.
+*   Multi-node synchronized SQLite replication.
 *   Optional web trace visualizer companion.
 
 ---

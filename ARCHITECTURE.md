@@ -621,4 +621,57 @@ strip = true
 
 ---
 
+## 14. Upcoming Feature Specification: Native Advanced RAG Engine (v0.5)
+
+To provide deep reading and documentation analysis without sacrificing the single-binary native Rust invariant, OpenISSA v0.5 introduces a local-first Advanced RAG Engine.
+
+### 14.1 Architectural Overview
+The RAG engine extends the existing Retrieval Ladder with an offline-capable, hybrid retrieval substrate:
+
+```text
+Document Sources (Web /llms.txt, Local .md/.rs/.py, Technical PDFs)
+  → AST-Aware Chunker (Headers, Code Blocks, Tables)
+  → Contextual Breadcrumb Prefixing ([Doc > Section > Subsection])
+  → Dual Storage (SQLite FTS5 BM25 + Vector Embeddings)
+  → Hybrid Retrieval (Reciprocal Rank Fusion - RRF)
+  → Parent-Child Context Expansion
+  → Grounding in Evidence Graph DAG
+```
+
+### 14.2 AST-Aware Semantic Chunking
+Traditional naive sliding-window chunking destroys semantic context in technical documentation. OpenISSA employs an AST-aware parser:
+1. **Heading Scopes**: Splits on markdown headers (`#`, `##`, `###`), preserving entire functional sub-sections.
+2. **Code Block Protection**: Never breaks code fences (```rust ... ```) or JSON payloads mid-syntax.
+3. **Table Preservation**: Keeps Markdown and HTML tables intact within a single chunk.
+4. **Hierarchical Breadcrumb Wrapping**: Every chunk is prepended with its structural location:
+   ```markdown
+   [Document: FastHTML Guide > Section: Routing > Subsection: URL Parameters]
+   ```
+
+### 14.3 Hybrid Storage Schema & Reciprocal Rank Fusion (RRF)
+OpenISSA utilizes SQLite in WAL mode with two complementary retrieval indexes:
+1. **Sparse Lexical Index**: Native SQLite FTS5 BM25 (`doc_index`) for exact identifiers, function names, and error codes.
+2. **Dense Vector Index**: Fixed-dimension vector BLOBs with SIMD-accelerated cosine similarity calculation.
+3. **Reciprocal Rank Fusion (RRF)**:
+   ```text
+   RRF_Score(d) = (w_bm25 / (60 + Rank_bm25(d))) + (w_vec / (60 + Rank_vec(d)))
+   ```
+   RRF eliminates arbitrary score normalization discrepancies between BM25 and vector cosine metrics, delivering robust relevance across both keyword-exact and semantic-conceptual queries.
+
+### 14.4 Parent-Child Retrieval & Context Expansion
+* **Child Chunks (200–400 tokens)**: Dense index units optimized for pinpoint vector similarity and keyword hits.
+* **Parent Chunks (1,000–2,000 tokens)**: High-level section scopes returned to the AI agent context window, ensuring the model receives complete code snippets and surrounding explanations rather than isolated fragments.
+
+### 14.5 Embedding Substrate
+* **Offline Local First**: Lightweight native ONNX runtime (`bge-small-en-v1.5` or `all-MiniLM-L6-v2`) executing locally with zero external network calls.
+* **Configurable Provider**: Configured in `~/.openissa/config.toml` (Ollama, OpenAI `text-embedding-3-small`).
+* **Zero-Cloud Degradation**: If embeddings are unconfigured or unavailable, OpenISSA degrades gracefully to high-speed SQLite FTS5 BM25 search without throwing runtime errors.
+
+### 14.6 MCP Tool Definitions
+1. **`rag_index`**: Ingests files, directories, repositories, or URLs into SQLite RAG storage.
+2. **`rag_query`**: Executes hybrid RRF retrieval with configurable `top_k`, filters, and source citations.
+3. **`rag_inspect`**: Expands full parent document sections or referenced code files on demand.
+
+---
+
 *This blueprint serves as the single source of truth for the implementation of OpenISSA.*
