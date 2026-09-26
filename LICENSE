@@ -1,0 +1,58 @@
+OpenISSA Community & Commercial License
+Version 1.0, September 2026
+Copyright (c) 2026 OpenISSA Contributors
+
+==============================================================================
+1. COMMUNITY USE GRANT (FREE)
+==============================================================================
+
+Permission is hereby granted, free of charge, to any person or organization 
+obtaining a copy of this software and associated documentation files 
+(the "Software"), to deal in the Software without restriction, including 
+without limitation the rights to use, copy, modify, merge, publish, distribute, 
+and/or sublicense copies of the Software, subject to the following conditions:
+
+The Community Use Grant permits the following uses free of charge:
+  a. Personal, non-commercial, hobbyist, and academic/educational use.
+  b. Individual developer use (including work on commercial codebases or 
+     work machines by a single individual).
+  c. Open-source projects and non-profit organizations.
+  d. Small commercial teams and startups having five (5) or fewer total 
+     users across the organization.
+
+==============================================================================
+2. COMMERCIAL USE RESTRICTIONS
+==============================================================================
+
+A separate, paid Commercial License from the copyright holders is required if 
+you intend to:
+  a. Deploy or make the Software available for use by more than five (5) users 
+     within a commercial enterprise or organization.
+  b. Embed, bundle, incorporate, or redistribute the Software as part of a 
+     commercial, revenue-generating software product, SaaS platform, agent 
+     platform, or paid cloud service (OEM / redistribution use).
+  c. Host the Software as a managed search, scraping, or web intelligence API 
+     service for third parties.
+
+To inquire about or purchase a Commercial License, please contact:
+  Email: contact@datadaur.com
+  (Future web portal: https://openissa.dev)
+
+==============================================================================
+3. CONDITIONS
+==============================================================================
+
+The above copyright notice and this permission notice shall be included in 
+all copies or substantial portions of the Software.
+
+==============================================================================
+4. DISCLAIMER OF WARRANTY & LIMITATION OF LIABILITY
+==============================================================================
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+THE SOFTWARE.

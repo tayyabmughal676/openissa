@@ -1,0 +1,26 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+
+# Local OpenISSA state & storage
+.openissa/
+*.db
+*.db-wal
+*.db-shm
+blobs/
+tantivy_index/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# IDE & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment & local keys
+.env
+.env.*
+!.env.example
