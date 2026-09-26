@@ -196,19 +196,28 @@ Every research session compiles a **Claim-to-Evidence DAG**, tracking where clai
 *   **Zero Dependencies**: No Python version conflicts, no Node daemon crashes, no Docker containers required.
 *   **Complete Privacy**: Your search queries, extracted data, and research traces live in `~/.openissa/` on your SSD. Nothing is phoned home to a centralized telemetry server.
 
+### Pillar 5: Autonomous Discovery Engine (/llms.txt & Sitemaps)
+Commercial search engines (Brave, Google, DuckDuckGo) are prone to rate limits, CAPTCHAs, and SEO pollution. OpenISSA includes an **autonomous discovery subsystem** that bypasses search engines entirely:
+*   **/llms.txt Extraction**: Directly parses the new AI-native documentation standard (used by OpenAI, Anthropic, Stripe, FastHTML, Cloudflare, Mintlify), giving your agent the curated site inventory in a single HTTP request.
+*   **Sitemap & Robots Analysis**: Parses `sitemap.xml` and nested `sitemap_index.xml` trees declared in `robots.txt`, offering lightning-fast path filtering (e.g., isolating only `/api/` or `/v2/` documentation).
+*   **Domain-Bounded Spider**: Explores internal links with strict domain isolation and binary asset filtering.
+
 ---
 
 ## The MCP Tool Suite
 
-OpenISSA exposes 5 lean, high-leverage tools to your AI client:
+## The MCP Tool Suite
+
+OpenISSA exposes 6 lean, high-leverage tools to your AI client over stdio and SSE:
 
 | Tool | Purpose | Key Parameters |
 | :--- | :--- | :--- |
-| `web_search` | Federated search across Brave, SearXNG, DuckDuckGo with deduplication & authority scoring. | `query`, `providers`, `freshness`, `limit` |
+| `web_search` | Federated multi-engine search (DuckDuckGo, Hacker News, Wikipedia, GitHub repos & RFCs/issues, Brave, Tavily) with deduplication & scoring. | `query`, `providers`, `freshness`, `limit` |
+| `web_index_site` | Autonomously map an entire documentation domain without search engines by parsing `/llms.txt`, recursive XML sitemaps, and robots directives. | `url`, `filter` |
 | `web_fetch` | Smart laddered fetcher. Auto-escalates from HTTP streaming to headless Chromium if JS is required. Returns token-dense Markdown. | `url`, `force_browser`, `max_length_tokens` |
 | `web_inspect` | Deep network & DOM diagnostics: HTTP status, redirect chains, SSL, response headers, robots.txt, sitemaps. | `url`, `diagnostics` |
-| `web_test_endpoint` | Sandboxed HTTP experiment runner. Safely test live REST/GraphQL APIs with methods, headers, and params. | `url`, `method`, `headers`, `params`, `body` |
-| `web_research` | Autonomous research engine. Bounded DAG that searches, fetches via ladder, verifies against primary sources, and builds an evidence graph. | `goal`, `budget`, `require_primary_verification` |
+| `web_test_endpoint` | Sandboxed HTTP experiment runner. Safely test live REST/GraphQL APIs with methods, headers, parameters, and request body. | `url`, `method`, `headers`, `params`, `body` |
+| `web_research` | Autonomous investigative engine. Bounded DAG that searches across providers, fetches via ladder, verifies claims against primary sources, and builds an evidence graph. | `goal`, `budget`, `require_primary_verification` |
 
 ---
 
@@ -221,18 +230,28 @@ Install the pre-compiled native binary:
 # Via Cargo
 cargo install openissa
 
-# Or via Homebrew (macOS)
-brew install openissa/tap/openissa
+# Or build from source
+git clone https://github.com/tayyabmughal676/openissa.git
+cd openissa
+cargo build --release --bin openissa
 ```
 
-### 2. Connect to Claude Code
+### 2. Auto-Install into Cursor & OpenCode
+Install MCP server definitions into your editor configuration with one command:
+
+```bash
+# Automatically detects and configures Cursor (.cursor/mcp.json) and OpenCode (opencode.json)
+openissa install-mcp
+```
+
+### 3. Connect to Claude Code
 Add OpenISSA to Claude Code with a single command:
 
 ```bash
 claude mcp add openissa -- openissa mcp
 ```
 
-### 3. Connect to Cursor / Windsurf
+### 4. Connect to Cursor / Windsurf / Claude Desktop Manually
 Add OpenISSA to your `mcp.json` or `claude_desktop_config.json`:
 
 ```json
@@ -249,21 +268,39 @@ Add OpenISSA to your `mcp.json` or `claude_desktop_config.json`:
 }
 ```
 
-### 4. CLI Usage (Independent of MCP)
-OpenISSA also functions as a powerful local CLI tool:
+### 5. CLI Usage & Remote SSE Daemon
+OpenISSA functions both as a local CLI tool and a persistent daemon:
 
 ```bash
-# Fast federated search
+# Run stdio MCP server for Claude Code / Cursor / OpenCode
+openissa mcp
+
+# Run remote MCP SSE transport daemon (for remote AI agents and Docker)
+openissa serve 8080
+
+# Auto-configure MCP servers in Cursor (.cursor/mcp.json) and OpenCode (opencode.json)
+openissa install-mcp
+
+# Execute autonomous multi-phase research DAG
+openissa research "rust 1.85 async closures" 5
+
+# Fast federated multi-engine search (DuckDuckGo, HN, Wiki, GitHub, Brave)
 openissa search "Rust 2024 edition async traits"
 
-# Fetch and stream clean Markdown
+# Fetch and stream clean Markdown (Retrieval Ladder)
 openissa fetch https://docs.rs/tokio/latest/tokio/
 
-# Run network diagnostics
-openissa inspect https://api.github.com
+# Fetch with Tier 4 headless Chromium JavaScript rendering
+openissa fetch -b https://react.dev
 
-# Launch an autonomous research session
-openissa research "Investigate breaking changes in Axum 0.8" --budget-requests 15
+# Autonomously discover documentation maps (/llms.txt & sitemaps)
+openissa discover https://fastht.ml
+
+# Discover with specific keyword path filtering (e.g. only API pages)
+openissa discover https://fastht.ml api
+
+# Run system diagnostic & storage health check
+openissa doctor
 ```
 
 ---
@@ -277,9 +314,9 @@ log_level = "info"
 
 [providers]
 default = "auto"
-# Brave, SearXNG, DuckDuckGo (HTML)
+# Configurable API keys for external search services (optional; DDG, HN, Wiki, GitHub work zero-config):
 brave_api_key = "your_brave_key"
-searxng_url = "http://localhost:8080"
+tavily_api_key = "your_tavily_key"
 
 [ladder]
 cache_enabled = true
@@ -296,13 +333,26 @@ block_private_networks = true # SSRF protection
 
 ---
 
+## Technical Documentation & Architecture
+
+* [`ARCHITECTURE.md`](file:///Users/mac/Desktop/openissa/ARCHITECTURE.md) — Complete engineering specification, Retrieval Ladder FSM, SSRF firewall threat model, and SQLite FTS5 schema.
+* [`openissa-idea.md`](file:///Users/mac/Desktop/openissa/openissa-idea.md) — Strategic design rationale, market differentiation, and competitive analysis against Firecrawl, Crawl4AI, and browser-use.
+* [`CLAUDE.md`](file:///Users/mac/Desktop/openissa/CLAUDE.md) — Guidelines for Claude Code, developer workflows, and mandatory human review rules.
+* [`AGENTS.md`](file:///Users/mac/Desktop/openissa/AGENTS.md) — AI agent directives, security invariants, and conventional commit guidelines.
+* [`GEMINI.md`](file:///Users/mac/Desktop/openissa/GEMINI.md) — Specific instructions for Gemini and Antigravity agent environments.
+* [`git-release.md`](file:///Users/mac/Desktop/openissa/git-release.md) — Release tagging checklist, cross-compilation target matrix, and mandatory human review gate.
+
+---
+
 ## Roadmap
 
-- [x] Conceptual specification & competitive landscape analysis (v0.2).
-- [ ] **v0.1**: Single Rust binary MCP server with `web_search`, `web_fetch` (streaming HTML → Markdown), and SQLite cache.
-- [ ] **v0.2**: The Retrieval Ladder with lazy Chromium CDP fallback + `web_test_endpoint` Web Lab with SSRF guardrails.
-- [ ] **v0.3**: Tantivy full-text index integration + autonomous research DAG with primary vs. secondary evidence graphs.
-- [ ] **v1.0**: Embedded hybrid vector search (LanceDB) and multi-node team sharing.
+- [x] Conceptual specification & competitive landscape analysis.
+- [x] **v0.1**: Single Rust binary MCP server with `web_search` (DuckDuckGo, HackerNews, Wikipedia, GitHub, Brave, Tavily), `web_fetch`, SQLite WAL cache, and local BM25 FTS5 index.
+- [x] **v0.2**: The Retrieval Ladder with lazy Chromium CDP fallback (`-b`) + `web_test_endpoint` Web Lab with SSRF firewall guardrails.
+- [x] **v0.3**: Remote HTTP Server-Sent Events (SSE) transport (`openissa serve`) + Autonomous Discovery Engine (`/llms.txt`, recursive sitemaps, spider, path filtering).
+- [x] **v0.4**: Formal Evidence Graph DAG with authority-weighted claim confidence synthesis (`web_research`).
+- [x] **21/21 Automated Tests Passing** (Unit tests across all 8 crates + E2E integration research DAG test suite).
+- [ ] **v1.0**: Embedded hybrid vector search (LanceDB) and distributed team cache deduplication.
 
 ## License
 

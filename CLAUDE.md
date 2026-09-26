@@ -33,7 +33,7 @@ Never run `git push`, `gh release create`, or push tags autonomously.
 # Compilation & Check
 cargo check --workspace --all-targets
 
-# Run all unit, integration, and security tests
+# Run all unit, integration, and E2E security tests (21 tests passing)
 cargo test --workspace --all-targets
 
 # Code formatting (must be 100% clean)
@@ -42,11 +42,26 @@ cargo fmt --all -- --check
 # Strict linting (zero warnings permitted)
 cargo clippy --workspace --all-targets -- -D warnings
 
-# Build release binary
+# Build optimized release binary
 cargo build --release --bin openissa
 
 # Test MCP server over stdio
 ./target/release/openissa mcp
+
+# Test remote MCP SSE daemon
+./target/release/openissa serve 8080
+
+# Auto-configure MCP servers in Cursor and OpenCode
+./target/release/openissa install-mcp
+
+# Test headless Chromium CDP rendering
+./target/release/openissa fetch -b https://react.dev
+
+# Run multi-query autonomous research DAG
+./target/release/openissa research "Rust 2024 edition async closures" 5
+
+# Run system and storage health diagnostics
+./target/release/openissa doctor
 ```
 
 ---

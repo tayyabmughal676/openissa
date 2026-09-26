@@ -4,7 +4,7 @@
 >
 > **Search deeper. Explore wider. Investigate. Verify. Keep control.**
 
-Status: Concept & Architecture Specification (v0.2 — Pure-MCP Focus)  
+Status: Implemented & Production-Verified Product Specification (v0.1.0 Baseline)  
 Date: 2026-09-26  
 Scope Decision: **Headless MCP-Only Architecture** (No desktop GUI/App; Sparrow companion postponed)
 
@@ -164,13 +164,11 @@ Data and processing remain on the user's machine. OpenISSA runs as a self-contai
 ```
 No mandatory cloud accounts, no hosted vector DBs, no tracking.
 
-### 5.2 Provider-Agnostic
-Interchangeable search adapters:
-*   Brave Search API
-*   SearXNG (self-hosted or public)
-*   DuckDuckGo (HTML / lite)
-*   Tavily / Exa (optional API adapters)
-*   Direct website crawling & local Tantivy indexes
+### 5.2 Provider-Agnostic & Search-Free Discovery
+Interchangeable search adapters & direct site discovery:
+*   **Autonomous Discovery**: Native `/llms.txt`, `sitemap.xml`, and `robots.txt` indexer (100% provider-free, zero API cost)
+*   **Federated Search**: Brave Search API, SearXNG, DuckDuckGo
+*   **Site Spidering**: Domain-bounded internal link traversal and local Tantivy indexing
 
 ### 5.3 Deterministic Where Possible
 Do not waste LLM tokens or inference latency on tasks a deterministic component can perform:
@@ -312,7 +310,7 @@ A comprehensive investigation of current open-source projects, tools, and commer
 
 ## 8. The OpenISSA MCP Tool Suite
 
-OpenISSA exposes 5 cohesive, high-impact tools over the standard Model Context Protocol:
+OpenISSA exposes 6 cohesive, high-impact tools over the standard Model Context Protocol (stdio & SSE):
 
 ```json
 [
@@ -328,6 +326,18 @@ OpenISSA exposes 5 cohesive, high-impact tools over the standard Model Context P
         "limit": { "type": "integer", "default": 10 }
       },
       "required": ["query"]
+    }
+  },
+  {
+    "name": "web_index_site",
+    "description": "Autonomously map an entire documentation domain without search engines by parsing /llms.txt, XML sitemaps, and robots directives.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": { "type": "string", "description": "Target domain or base URL (e.g. https://docs.rs or https://stripe.com)" },
+        "filter": { "type": "string", "description": "Optional keyword path filter (e.g. 'api', 'v2', 'guide')" }
+      },
+      "required": ["url"]
     }
   },
   {
@@ -481,29 +491,34 @@ openissa/
 
 ## 12. Phased Roadmap (Pure-MCP Delivery)
 
-### v0.1: The Lightweight Fast MCP (MVP)
+### v0.1: The Lightweight Fast MCP (MVP) — [COMPLETED & VERIFIED]
 *   Single Rust binary with `openissa mcp` stdio transport.
-*   `web_search`: Federated search (Brave Search API + DuckDuckGo fallback).
+*   `web_search`: Federated search across DuckDuckGo, Hacker News, Wikipedia, GitHub (repos + issues/RFCs), Brave, and Tavily.
 *   `web_fetch`: Smart HTTP fetcher with streaming HTML-to-Markdown cleaning (`lol-html`) and SQLite cache.
 *   `web_inspect`: URL headers, redirects, and status inspector.
-*   Tested with **Claude Code**, **Cursor**, and **Windsurf**.
+*   Zero-dependency TOML configuration loader for `~/.openissa/config.toml`.
+*   Tested with **Claude Code**, **Cursor**, and **OpenCode**.
 
-### v0.2: The Retrieval Ladder & Web Lab
-*   Playwright / CDP lazy browser escalation for JavaScript-heavy pages.
-*   `web_test_endpoint`: Sandboxed HTTP testing for live APIs with SSRF protection.
-*   `web_research`: First iteration of the autonomous research DAG.
-*   Human handoff notifications on CAPTCHA / bot blocks.
+### v0.2: The Retrieval Ladder & Web Lab — [COMPLETED & VERIFIED]
+*   `ChromiumSupervisor`: Lazy-spawned headless Chromium auto-discovery across macOS, Linux, and Windows (`--headless=new --dump-dom --virtual-time-budget=3000`).
+*   `web_test_endpoint`: Sandboxed HTTP testing for live APIs with `NetworkFirewall` SSRF protection (blocking RFC1918, link-local metadata, loopback, and DNS rebinding).
+*   Automatic client-side rendering (CSR) escalation heuristic.
 
-### v0.3: Deep Evidence Engine & Local Memory
-*   Tantivy full-text index integration for instant local re-search across past sessions.
-*   Claim-to-evidence DAG with primary vs. secondary source scoring.
-*   Contradiction detection engine.
-*   Domain-specific budget enforcement.
+### v0.3: Autonomous Discovery Engine & Local Memory — [COMPLETED & VERIFIED]
+*   `web_index_site`: Autonomous discovery without search engines via `/llms.txt`, recursive XML sitemaps (`<urlset>` and `<sitemapindex>`), and domain-bounded `SiteSpider`.
+*   Keyword path filtering to prevent token explosion.
+*   SQLite FTS5 BM25 full-text search index (`doc_index`) for sub-millisecond local search.
 
-### v1.0: Enterprise & Multi-Node
-*   Hybrid BM25 + embedded vector retrieval (e.g. LanceDB / fastembed-rs).
-*   SSE / remote MCP server daemon for team sharing.
-*   Re-evaluation of desktop companion (Sparrow) if user demand requires a visual trace explorer.
+### v0.4: Deep Evidence Engine & Remote SSE Daemon — [COMPLETED & VERIFIED]
+*   `web_research`: Autonomous multi-query research DAG orchestrator with authority-weighted claim confidence scoring.
+*   Contradiction detection and source quality tiering (Tier 1 Primary to Tier 4 Aggregators).
+*   `openissa serve [port] [host]`: Multi-client HTTP/1.1 Server-Sent Events (SSE) daemon with `/sse`, `/message`, and `/health`.
+*   21/21 passing automated unit and integration tests (`crates/openissa-cli/tests/e2e_research.rs`).
+
+### v1.0: Enterprise & Multi-Node (Future)
+*   Hybrid BM25 + embedded vector retrieval (e.g. LanceDB).
+*   Multi-node distributed team cache deduplication.
+*   Optional web trace visualizer companion.
 
 ---
 

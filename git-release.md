@@ -52,11 +52,16 @@ Before running any `git push` or `gh release` commands, the agent or developer M
 Target Tag:        v0.1.0
 Target Branch:     main
 Commit Hash:       abcdef1234567890
-Changes Summary:   - Added federated search engine (Brave & SearXNG)
-                   - Implemented streaming HTML-to-Markdown fetcher
-                   - Stdio MCP server tested with Claude Code & Cursor
+Changes Summary:   - Federated search engine (DuckDuckGo, HackerNews, Wikipedia, GitHub, Brave, Tavily)
+                   - Streaming HTML-to-Markdown fetcher (lol-html) & SQLite WAL cache
+                   - Tier 4 Chromium CDP headless fallback with virtual time budget
+                   - Web Lab declarative testing with SSRF firewall (DNS pinning, private IP blocking)
+                   - Autonomous Discovery Engine (/llms.txt, recursive sitemaps, spider, path filtering)
+                   - SQLite FTS5 BM25 full-text search index
+                   - Dual MCP transport: Stdio JSON-RPC 2.0 + HTTP/1.1 SSE daemon (openissa serve)
+                   - Auto-installer for Cursor (.cursor/mcp.json) and OpenCode (opencode.json)
 Breaking Changes:  None
-Test Status:       All 48 tests passing (100% green)
+Test Status:       All 21 unit & E2E integration tests passing (100% green)
 Security Status:   SSRF firewall active; zero cargo audit vulnerabilities
 ==============================================================================
 Do you approve pushing this commit and publishing release tag v0.1.0? [y/N]

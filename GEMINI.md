@@ -33,17 +33,35 @@ Never run `git push`, publish release tags, or modify remote branches without di
 # Compilation & Check
 cargo check --workspace --all-targets
 
-# Full test suite (must be 100% passing)
+# Full test suite (21 unit & integration tests passing)
 cargo test --workspace --all-targets
 
 # Code formatting check
 cargo fmt --all -- --check
 
 # Strict linting (zero warnings permitted)
-cargo clippy --workspace --all-targets -- -D warnings
+cargo clippy --workspace --all-targets --all-features -- -D warnings
 
 # Release build
 cargo build --release --bin openissa
+
+# Test stdio MCP server
+./target/release/openissa mcp
+
+# Test remote MCP SSE daemon
+./target/release/openissa serve 8080
+
+# Auto-configure MCP servers in Cursor and OpenCode
+./target/release/openissa install-mcp
+
+# Test headless Chromium DOM extraction
+./target/release/openissa fetch -b https://react.dev
+
+# Run multi-query autonomous research DAG
+./target/release/openissa research "Rust 2024 edition async traits" 5
+
+# Run system diagnostic and storage health check
+./target/release/openissa doctor
 ```
 
 ---

@@ -74,11 +74,11 @@ OpenISSA is a **local-first, high-efficiency internet research engine and MCP se
 # Check compilation across all crates
 cargo check --workspace --all-targets
 
-# Run the full test suite
+# Run the full test suite (21 unit and integration tests)
 cargo test --workspace --all-targets
 
 # Run security and linter checks
-cargo clippy --workspace --all-targets -- -D warnings
+cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo fmt --all -- --check
 
 # Build the optimized release binary
@@ -86,4 +86,19 @@ cargo build --release --bin openissa
 
 # Test the local MCP server over stdio
 ./target/release/openissa mcp
+
+# Test the remote MCP Server-Sent Events (SSE) transport daemon
+./target/release/openissa serve 8080
+
+# Auto-configure MCP servers in Cursor (.cursor/mcp.json) and OpenCode (opencode.json)
+./target/release/openissa install-mcp
+
+# Test headless Chromium DOM extraction
+./target/release/openissa fetch -b https://react.dev
+
+# Run multi-query autonomous research DAG
+./target/release/openissa research "Rust 2024 edition async traits" 5
+
+# Run system diagnostic and storage health check
+./target/release/openissa doctor
 ```

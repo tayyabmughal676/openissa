@@ -1,0 +1,61 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/openissa-core",
+    "crates/openissa-fetcher",
+    "crates/openissa-browser",
+    "crates/openissa-search",
+    "crates/openissa-investigate",
+    "crates/openissa-storage",
+    "crates/openissa-mcp",
+    "crates/openissa-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["OpenISSA Contributors <contact@datadaur.com>"]
+license = "OpenISSA Community & Commercial License"
+repository = "https://github.com/tayyabmughal676/openissa"
+readme = "README.md"
+
+[workspace.dependencies]
+# Internal crates
+openissa-core = { path = "crates/openissa-core" }
+openissa-fetcher = { path = "crates/openissa-fetcher" }
+openissa-browser = { path = "crates/openissa-browser" }
+openissa-search = { path = "crates/openissa-search" }
+openissa-investigate = { path = "crates/openissa-investigate" }
+openissa-storage = { path = "crates/openissa-storage" }
+openissa-mcp = { path = "crates/openissa-mcp" }
+
+# Async runtime & networking
+tokio = { version = "1.38", features = ["full"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "gzip", "brotli", "json", "stream"] }
+url = "2.5"
+
+# Serialization & Error handling
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Logging & Telemetry
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Storage & Full-text search
+rusqlite = { version = "0.31", features = ["bundled"] }
+tantivy = "0.22"
+
+# Utilities
+uuid = { version = "1.8", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+async-trait = "0.1"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = true
